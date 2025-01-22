@@ -7,20 +7,18 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private int id;
     private String username;
-    private String password; // Store as a hashed value
+    private String password;
 
     public String getUsername() {
         return username;

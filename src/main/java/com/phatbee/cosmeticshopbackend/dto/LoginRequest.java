@@ -3,12 +3,10 @@ package com.phatbee.cosmeticshopbackend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class LoginRequest {
     private String username;
     private String password;
