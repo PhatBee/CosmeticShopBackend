@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(phone);
         user.setImageUrl(imageUrl);
         user.setOtp(otp);
+        user.setOtpGeneratedAt(LocalDateTime.now());
         userRepositoty.save(user);
 
         return "Registration successful. Please check your email for the OTP.";
@@ -104,5 +105,43 @@ public class UserServiceImpl implements UserService {
 
         emailService.sendOtp(user.getEmail(), newOtp);
         return "A new OTP has been sent to your email.";
+    }
+
+    @Override
+    public String sendOtpForPasswordReset(String email) {
+        User user = userRepositoty.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isActivated()) {
+            throw new RuntimeException("User is not activated, Please contact administrator");
+        }
+
+        String otp = OTPGenerator.generateOTP();
+        emailService.sendOtp(email, otp);
+        user.setOtp(otp);
+        user.setOtpGeneratedAt(LocalDateTime.now());
+        userRepositoty.save(user);
+        return "A new OTP has been sent to your email.";
+
+    }
+
+    @Override
+    public String resetPassword(String email, String otp, String newPassword) {
+        User user = userRepositoty.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid Exception, No user found"));
+
+        if (user.getOtp() == null || !user.getOtp().equals(otp)) {
+            throw new RuntimeException("Invalid OTP. Please try again");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (user.getOtpGeneratedAt() != null && user.getOtpGeneratedAt().plusSeconds(30).isAfter(now)) {
+            throw new RuntimeException("Please wait 30 seconds before requesting a new OTP");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setOtp(null);
+        userRepositoty.save(user);
+
+        return "Password reset successful";
     }
 }

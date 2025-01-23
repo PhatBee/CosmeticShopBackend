@@ -1,10 +1,7 @@
 package com.phatbee.cosmeticshopbackend.Controller;
 
 import com.phatbee.cosmeticshopbackend.Service.Impl.UserServiceImpl;
-import com.phatbee.cosmeticshopbackend.dto.LoginRequest;
-import com.phatbee.cosmeticshopbackend.dto.OtpRequest;
-import com.phatbee.cosmeticshopbackend.dto.RegisterRequest;
-import com.phatbee.cosmeticshopbackend.dto.ResendOtpRequest;
+import com.phatbee.cosmeticshopbackend.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +39,18 @@ public class AuthController {
     @PostMapping("/resend-otp")
     public ResponseEntity<String> resendOtp(@RequestBody ResendOtpRequest request) {
         String response = userService.resendOtp(request.getEmail());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        String response = userService.sendOtpForPasswordReset(forgotPasswordRequest.getEmail());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        String response = userService.resetPassword(resetPasswordRequest.getEmail(), resetPasswordRequest.getOtp(), resetPasswordRequest.getNewPassword());
         return ResponseEntity.ok(response);
     }
 }
