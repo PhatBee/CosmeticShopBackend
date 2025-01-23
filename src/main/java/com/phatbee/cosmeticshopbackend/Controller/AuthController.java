@@ -2,6 +2,9 @@ package com.phatbee.cosmeticshopbackend.Controller;
 
 import com.phatbee.cosmeticshopbackend.Service.Impl.UserServiceImpl;
 import com.phatbee.cosmeticshopbackend.dto.LoginRequest;
+import com.phatbee.cosmeticshopbackend.dto.OtpRequest;
+import com.phatbee.cosmeticshopbackend.dto.RegisterRequest;
+import com.phatbee.cosmeticshopbackend.dto.ResendOtpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +25,23 @@ public class AuthController {
             return ResponseEntity.ok("Login Successful");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+        String response = userService.registerUser(registerRequest.getUsername(), registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getFullName(), registerRequest.getBirthDate(), registerRequest.getGender(), registerRequest.getPhone(), registerRequest.getImageUrl());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/activate")
+    public ResponseEntity<String> activate(@RequestBody OtpRequest otpRequest) {
+        String response = userService.activateAccount(otpRequest.getEmail(), otpRequest.getOtp());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<String> resendOtp(@RequestBody ResendOtpRequest request) {
+        String response = userService.resendOtp(request.getEmail());
+        return ResponseEntity.ok(response);
     }
 }

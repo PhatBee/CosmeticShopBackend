@@ -1,5 +1,6 @@
 package com.phatbee.cosmeticshopbackend.Entity;
 
+import com.phatbee.cosmeticshopbackend.Enum.Gender;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +8,9 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Data
@@ -17,8 +21,18 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String fullName;
+    private Date birthDate;
+    private String phone;
+    private Gender gender;
+    private String imageUrl;
     private String username;
+    private String email;
     private String password;
+    private boolean activated = false;
+    private String otp; //One-time-password
+    private int failedAttempts = 0;
+    private LocalDateTime otpGeneratedAt;
 
     public String getUsername() {
         return username;
@@ -34,5 +48,45 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+
+    public LocalDateTime getOtpGeneratedAt() {
+        return otpGeneratedAt;
+    }
+
+    public void setOtpGeneratedAt(LocalDateTime otpGeneratedAt) {
+        this.otpGeneratedAt = otpGeneratedAt;
     }
 }
