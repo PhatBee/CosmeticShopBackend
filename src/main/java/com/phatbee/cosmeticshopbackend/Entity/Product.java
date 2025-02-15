@@ -18,7 +18,6 @@ import java.sql.Date;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private boolean active;
     private int productID;
     private int categoryID;
     private String productName;
@@ -33,4 +32,5 @@ public class Product {
     private String how_to_use;
     private String description;
     private int volume;
+    private boolean active;
 }
