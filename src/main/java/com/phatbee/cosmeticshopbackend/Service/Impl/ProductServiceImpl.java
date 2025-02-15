@@ -10,12 +10,15 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
-
     @Autowired
     private ProductRepository productRepository;
+    @Override
+    public List<Product> getAllProducts() {
+        return productRepository.findByActiveTrue();
+    }
 
     @Override
-    public List<Product> getAllProduct() {
-        return productRepository.findByActiveTrue();
+    public List<Product> getProductsByCategory(int categoryID) {
+        return productRepository.findByCategory_CategoryID(categoryID);
     }
 }
