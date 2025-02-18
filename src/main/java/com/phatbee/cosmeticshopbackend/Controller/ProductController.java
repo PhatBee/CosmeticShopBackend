@@ -32,4 +32,13 @@ public class ProductController {
         }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<Product>> getRecentProducts() {
+        List<Product> products = productService.getRecentProducts();
+        if (products.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
 }
