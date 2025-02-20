@@ -3,11 +3,13 @@ package com.phatbee.cosmeticshopbackend.Service.Impl;
 import com.phatbee.cosmeticshopbackend.Entity.Product;
 import com.phatbee.cosmeticshopbackend.Repository.ProductRepository;
 import com.phatbee.cosmeticshopbackend.Service.ProductService;
+import com.phatbee.cosmeticshopbackend.dto.ProductSalesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -31,5 +33,14 @@ public class ProductServiceImpl implements ProductService {
                 .stream()
                 .limit(10)
                 .toList();
+    }
+
+    @Override
+    public List<ProductSalesDTO> getTopSellingProducts() {
+        List<Object[]> results = productRepository.findTopSellingProducts();
+        return results.stream()
+                .map(result -> new ProductSalesDTO((Product) result[0], (Long) result[1]))
+                .limit(10)
+                .collect(Collectors.toList());
     }
 }

@@ -17,4 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p FROM Product p WHERE p.createdDate >= :startDate ORDER BY p.createdDate desc ")
     List<Product> findRecentProducts (@Param("startDate") LocalDate startDate);
+    @Query("SELECT ol.product, SUM(ol.quantity) AS totalQuantity FROM OrderLine ol " +
+            "GROUP BY ol.product " +
+            "ORDER BY totalQuantity DESC")
+    List<Object[]> findTopSellingProducts();
 }
