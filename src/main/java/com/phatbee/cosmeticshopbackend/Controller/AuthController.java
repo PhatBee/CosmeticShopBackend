@@ -16,12 +16,22 @@ public class AuthController {
     @Autowired
     UserServiceImpl userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    @PostMapping("/login1")
+    public ResponseEntity<String> login1(@RequestBody LoginRequest loginRequest) {
         if(userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
             return ResponseEntity.ok("Login Successful");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse response = userService.authenticate(loginRequest);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
 
     @PostMapping("/register")

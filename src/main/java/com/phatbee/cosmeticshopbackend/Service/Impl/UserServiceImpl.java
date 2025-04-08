@@ -5,12 +5,15 @@ import com.phatbee.cosmeticshopbackend.Entity.User;
 import com.phatbee.cosmeticshopbackend.Enum.Gender;
 import com.phatbee.cosmeticshopbackend.Repository.UserRepositoty;
 import com.phatbee.cosmeticshopbackend.Service.UserService;
+import com.phatbee.cosmeticshopbackend.dto.LoginRequest;
+import com.phatbee.cosmeticshopbackend.dto.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -49,7 +52,7 @@ public class UserServiceImpl implements UserService {
         user.setFullName(fullName);
         user.setGender(gender);
         user.setPhone(phone);
-        user.setImageUrl(imageUrl);
+        user.setImage(imageUrl);
         user.setOtp(otp);
         user.setOtpGeneratedAt(LocalDateTime.now());
         userRepositoty.save(user);
@@ -143,5 +146,31 @@ public class UserServiceImpl implements UserService {
         userRepositoty.save(user);
 
         return "Password reset successful";
+    }
+
+    @Override
+    public LoginResponse authenticate(LoginRequest loginRequest) {
+        Optional<User> userOptional = userRepositoty.findByUsername(loginRequest.getUsername());
+
+        if (!userOptional.isPresent()) {
+            return new LoginResponse(false, "User not found", null);
+        }
+
+        User user = userOptional.get();
+
+        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            // Create a copy of user without the password for security
+            User userResponse = new User();
+            userResponse.setUserId(user.getUserId());
+            userResponse.setUsername(user.getUsername());
+            userResponse.setEmail(user.getEmail());
+            userResponse.setGender(user.getGender());
+            userResponse.setImage(user.getImage());
+            // Don't set the password!
+
+            return new LoginResponse(true, "Login successful", userResponse);
+        } else {
+            return new LoginResponse(false, "Invalid password", null);
+        }
     }
 }
