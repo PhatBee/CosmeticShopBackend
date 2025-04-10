@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-            helper.setFrom("noreply@cosmeticsstore.com");
+            helper.setFrom("22110394@student.hcmute.edu.vn");
             helper.setTo(toEmail);
             helper.setSubject("Your OTP Verification Code");
 
@@ -39,6 +39,32 @@ public class EmailServiceImpl implements EmailService {
                     + "<h1 style='color: #007bff; letter-spacing: 2px;'>" + otp + "</h1>"
                     + "<p>This code will expire in 10 minutes.</p>"
                     + "<p>If you did not request this code, please ignore this email.</p>"
+                    + "<p>Best regards,<br>Cosmetics Store Team</p>"
+                    + "</div>";
+
+            helper.setText(content, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
+
+    @Override
+    public void sendPasswordResetOtp(String toEmail, String otp) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom("22110394@student.hcmute.edu.vn");
+            helper.setTo(toEmail);
+            helper.setSubject("Password Reset Verification Code");
+
+            String content = "<div style='font-family: Arial, sans-serif; padding: 20px;'>"
+                    + "<h2 style='color: #333;'>Cosmetics Store Password Reset</h2>"
+                    + "<p>You've requested to reset your password. Please use the following code:</p>"
+                    + "<h1 style='color: #e91e63; letter-spacing: 2px;'>" + otp + "</h1>"
+                    + "<p>This code will expire in 10 minutes.</p>"
+                    + "<p>If you did not request this code, please ignore this email and make sure you can still log in to your account.</p>"
                     + "<p>Best regards,<br>Cosmetics Store Team</p>"
                     + "</div>";
 

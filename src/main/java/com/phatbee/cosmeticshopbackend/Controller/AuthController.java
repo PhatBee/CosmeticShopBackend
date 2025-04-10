@@ -60,7 +60,7 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password1")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+    public ResponseEntity<String> resetPassword1(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         String response = userService.resetPassword(resetPasswordRequest.getEmail(), resetPasswordRequest.getOtp(), resetPasswordRequest.getNewPassword());
         return ResponseEntity.ok(response);
     }
@@ -79,7 +79,25 @@ public class AuthController {
 
     @PostMapping("/resend-otp")
     public ResponseEntity<RegistrationResponse> resendOtp(@RequestParam String email) {
-        RegistrationResponse response = userService.resendOtp(email);
+        RegistrationResponse response = userService.resendOtpRegistration(email);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<PasswordResetResponse> requestPasswordReset(@RequestBody ForgotPasswordRequest request) {
+        PasswordResetResponse response = userService.requestPasswordReset(request.getEmail());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<PasswordResetResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+        PasswordResetResponse response = userService.resetPassword(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/resend-password-reset-otp")
+    public ResponseEntity<PasswordResetResponse> resendOtpResetPassword(@RequestParam String email) {
+        PasswordResetResponse response = userService.resendOtpPasswordReset(email);
         return ResponseEntity.ok(response);
     }
 }

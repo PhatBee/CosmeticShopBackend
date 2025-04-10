@@ -257,7 +257,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RegistrationResponse resendOtp(String email) {
+    public RegistrationResponse resendOtpRegistration(String email) {
         Optional<UserOtp> userOtpOptional = otpRepository.findByEmail(email);
 
         if (!userOtpOptional.isPresent()) {
@@ -274,6 +274,111 @@ public class UserServiceImpl implements UserService {
         emailService.sendOtpEmail(email, newOtp);
 
         return new RegistrationResponse(true, "New OTP sent to your email");
+    }
+
+    @Override
+    public PasswordResetResponse requestPasswordReset(String email) {
+        // Check if user with email exists
+        Optional<User> userOptional = userRepositoty.findByEmail(email);
+        if (!userOptional.isPresent()) {
+            // For security reasons, don't reveal that email doesn't exist
+            return new PasswordResetResponse(true, "If your email is registered, you will receive a password reset code");
+        }
+
+        // Generate OTP
+        String otp = generateOtp();
+
+        // Save OTP
+        UserOtp passwordResetOtp = otpRepository.findByEmail(email).orElse(new UserOtp());
+        passwordResetOtp.setEmail(email);
+        passwordResetOtp.setOtp(otp);
+        passwordResetOtp.setExpiryTime(LocalDateTime.now().plusMinutes(10)); // OTP valid for 10 minutes
+        otpRepository.save(passwordResetOtp);
+
+        // Send OTP via email
+        emailService.sendPasswordResetOtp(email, otp);
+
+        return new PasswordResetResponse(true, "Password reset code sent to your email");
+    }
+
+    @Override
+    public PasswordResetResponse resetPassword(ResetPasswordRequest request) {
+        // Validate request
+        if (request.getEmail() == null || request.getOtp() == null || request.getNewPassword() == null) {
+            return new PasswordResetResponse(false, "Invalid request");
+        }
+
+        // Check if OTP exists
+        Optional<UserOtp> otpOptional = otpRepository.findByEmail(request.getEmail());
+        if (!otpOptional.isPresent()) {
+            return new PasswordResetResponse(false, "Invalid or expired reset code");
+        }
+
+        UserOtp passwordResetOtp = otpOptional.get();
+
+        // Check if OTP is expired
+        if (LocalDateTime.now().isAfter(passwordResetOtp.getExpiryTime())) {
+            otpRepository.delete(passwordResetOtp);
+            return new PasswordResetResponse(false, "Reset code has expired. Please request a new one.");
+        }
+
+        // Verify OTP
+        if (!passwordResetOtp.getOtp().equals(request.getOtp())) {
+            return new PasswordResetResponse(false, "Invalid reset code");
+        }
+
+        // Find user
+        Optional<User> userOptional = userRepositoty.findByEmail(request.getEmail());
+        if (!userOptional.isPresent()) {
+            return new PasswordResetResponse(false, "User not found");
+        }
+
+        User user = userOptional.get();
+
+        // Validate new password
+        if (request.getNewPassword().length() < 6) {
+            return new PasswordResetResponse(false, "Password must be at least 6 characters");
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepositoty.save(user);
+
+        // Delete OTP entry
+        otpRepository.delete(passwordResetOtp);
+
+        return new PasswordResetResponse(true, "Password has been reset successfully");
+    }
+
+    @Override
+    public PasswordResetResponse resendOtpPasswordReset(String email) {
+        // Check if user with email exists
+        Optional<User> userOptional = userRepositoty.findByEmail(email);
+        if (!userOptional.isPresent()) {
+            // For security reasons, don't reveal that email doesn't exist
+            return new PasswordResetResponse(true, "If your email is registered, you will receive a password reset code");
+        }
+
+        // Check if existing OTP request exists
+        Optional<UserOtp> otpOptional = otpRepository.findByEmail(email);
+        if (!otpOptional.isPresent()) {
+            return new PasswordResetResponse(false, "No password reset request found for this email");
+        }
+
+        // Generate new OTP
+        String newOtp = generateOtp();
+
+        // Update OTP
+        UserOtp passwordResetOtp = otpOptional.get();
+        passwordResetOtp.setOtp(newOtp);
+        passwordResetOtp.setExpiryTime(LocalDateTime.now().plusMinutes(10));
+        otpRepository.save(passwordResetOtp);
+
+        // Send new OTP via email
+        emailService.sendPasswordResetOtp(email, newOtp);
+
+        return new PasswordResetResponse(true, "New password reset code sent to your email");
+
     }
 
 }

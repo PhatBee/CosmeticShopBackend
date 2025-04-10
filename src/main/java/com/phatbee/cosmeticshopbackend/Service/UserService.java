@@ -1,6 +1,5 @@
 package com.phatbee.cosmeticshopbackend.Service;
 
-import com.phatbee.cosmeticshopbackend.Enum.Gender;
 import com.phatbee.cosmeticshopbackend.dto.*;
 
 import java.util.Date;
@@ -16,6 +15,9 @@ public interface UserService {
 
     RegistrationResponse register(RegistrationRequest request);
     RegistrationResponse verifyOtp(OtpVerificationRequest request);
-    RegistrationResponse resendOtp(String email);
+    RegistrationResponse resendOtpRegistration(String email);
+    PasswordResetResponse requestPasswordReset(String email);
+    PasswordResetResponse resetPassword(ResetPasswordRequest request);
+    PasswordResetResponse resendOtpPasswordReset(String email);
 
 }
