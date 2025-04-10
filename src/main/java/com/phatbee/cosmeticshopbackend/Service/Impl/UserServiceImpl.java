@@ -2,11 +2,12 @@ package com.phatbee.cosmeticshopbackend.Service.Impl;
 
 import com.phatbee.cosmeticshopbackend.Config.OTPGenerator;
 import com.phatbee.cosmeticshopbackend.Entity.User;
+import com.phatbee.cosmeticshopbackend.Entity.UserOtp;
 import com.phatbee.cosmeticshopbackend.Enum.Gender;
+import com.phatbee.cosmeticshopbackend.Repository.UserOtpRepository;
 import com.phatbee.cosmeticshopbackend.Repository.UserRepositoty;
 import com.phatbee.cosmeticshopbackend.Service.UserService;
-import com.phatbee.cosmeticshopbackend.dto.LoginRequest;
-import com.phatbee.cosmeticshopbackend.dto.LoginResponse;
+import com.phatbee.cosmeticshopbackend.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,6 +28,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private EmailServiceImpl emailService;
 
+    @Autowired
+    private UserOtpRepository otpRepository;
+
     private static final int MAX_ATTEMPTS = 3;
 
     @Override
@@ -36,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String registerUser(String username, String email, String password, String fullName, Date birthday, Gender gender, String phone, String imageUrl) {
+    public String registerUser(String username, String email, String password, String fullName, Date birthday, String gender, String phone, String imageUrl) {
         if (userRepositoty.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
@@ -88,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String resendOtp(String email) {
+    public String resendOtp1(String email) {
         User user = userRepositoty.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -173,4 +178,102 @@ public class UserServiceImpl implements UserService {
             return new LoginResponse(false, "Invalid password", null);
         }
     }
+
+    @Override
+    public RegistrationResponse register(RegistrationRequest request) {
+        // Check if username already exists
+        if (userRepositoty.existsByUsername(request.getUsername())) {
+            return new RegistrationResponse(false, "Username already exists");
+        }
+
+        // Check if email already exists
+        if (userRepositoty.existsByEmail(request.getEmail())) {
+            return new RegistrationResponse(false, "Email already registered");
+        }
+
+        // Generate OTP
+        String otp = generateOtp();
+
+        // Save OTP and user details temporarily
+        UserOtp userOtp = otpRepository.findByEmail(request.getEmail()).orElse(new UserOtp());
+        userOtp.setEmail(request.getEmail());
+        userOtp.setOtp(otp);
+        userOtp.setExpiryTime(LocalDateTime.now().plusMinutes(10)); // OTP valid for 10 minutes
+        userOtp.setUsername(request.getUsername());
+        userOtp.setPassword(passwordEncoder.encode(request.getPassword())); // Encrypt password
+        userOtp.setGender(request.getGender());
+        otpRepository.save(userOtp);
+
+        // Send OTP via email
+        emailService.sendOtpEmail(request.getEmail(), otp);
+
+        return new RegistrationResponse(true, "OTP sent to your email for verification");
+
+    }
+
+    @Override
+    public RegistrationResponse verifyOtp(OtpVerificationRequest request) {
+        Optional<UserOtp> userOtpOptional = otpRepository.findByEmail(request.getEmail());
+
+        if (!userOtpOptional.isPresent()) {
+            return new RegistrationResponse(false, "Invalid request or OTP expired");
+        }
+
+        UserOtp userOtp = userOtpOptional.get();
+
+        // Check if OTP is expired
+        if (LocalDateTime.now().isAfter(userOtp.getExpiryTime())) {
+            otpRepository.delete(userOtp);
+            return new RegistrationResponse(false, "OTP has expired. Please register again.");
+        }
+
+        // Verify OTP
+        if (!userOtp.getOtp().equals(request.getOtp())) {
+            return new RegistrationResponse(false, "Invalid OTP");
+        }
+
+        // Create new user
+        User user = new User();
+        user.setUsername(userOtp.getUsername());
+        user.setPassword(userOtp.getPassword()); // Already encrypted
+        user.setEmail(userOtp.getEmail());
+        user.setGender(userOtp.getGender());
+
+        // Save user
+        userRepositoty.save(user);
+
+        // Delete OTP entry
+        otpRepository.delete(userOtp);
+
+        return new RegistrationResponse(true, "Registration successful. Please login.");
+
+    }
+
+    private String generateOtp() {
+        // Generate 6-digit OTP
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
+    }
+
+    @Override
+    public RegistrationResponse resendOtp(String email) {
+        Optional<UserOtp> userOtpOptional = otpRepository.findByEmail(email);
+
+        if (!userOtpOptional.isPresent()) {
+            return new RegistrationResponse(false, "No registration in progress for this email");
+        }
+
+        UserOtp userOtp = userOtpOptional.get();
+        String newOtp = generateOtp();
+        userOtp.setOtp(newOtp);
+        userOtp.setExpiryTime(LocalDateTime.now().plusMinutes(10));
+        otpRepository.save(userOtp);
+
+        // Send new OTP via email
+        emailService.sendOtpEmail(email, newOtp);
+
+        return new RegistrationResponse(true, "New OTP sent to your email");
+    }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/api/auth")
@@ -34,33 +35,51 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
-        String response = userService.registerUser(registerRequest.getUsername(), registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getFullName(), registerRequest.getBirthDate(), registerRequest.getGender(), registerRequest.getPhone(), registerRequest.getImageUrl());
+//    @PostMapping("/register1")
+//    public ResponseEntity<String> register1(@RequestBody RegistrationRequest registrationRequest) {
+//        String response = userService.registerUser(registrationRequest.getUsername(), registrationRequest.getEmail(), registrationRequest.getPassword(), registrationRequest.getFullName(), registrationRequest.getBirthDate(), registrationRequest.getGender(), registrationRequest.getPhone(), registrationRequest.getImageUrl());
+//        return ResponseEntity.ok(response);
+//    }
+
+    @PostMapping("/activate1")
+    public ResponseEntity<String> activate(@RequestBody OtpVerificationRequest otpVerificationRequest) {
+        String response = userService.activateAccount(otpVerificationRequest.getEmail(), otpVerificationRequest.getOtp());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/activate")
-    public ResponseEntity<String> activate(@RequestBody OtpRequest otpRequest) {
-        String response = userService.activateAccount(otpRequest.getEmail(), otpRequest.getOtp());
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/resend-otp")
+    @PostMapping("/resend-otp1")
     public ResponseEntity<String> resendOtp(@RequestBody ResendOtpRequest request) {
-        String response = userService.resendOtp(request.getEmail());
+        String response = userService.resendOtp1(request.getEmail());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/forgot-password")
+    @PostMapping("/forgot-password1")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         String response = userService.sendOtpForPasswordReset(forgotPasswordRequest.getEmail());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("/reset-password1")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         String response = userService.resetPassword(resetPasswordRequest.getEmail(), resetPasswordRequest.getOtp(), resetPasswordRequest.getNewPassword());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest request) {
+        RegistrationResponse response = userService.register(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<RegistrationResponse> verifyOtp(@RequestBody OtpVerificationRequest request) {
+        RegistrationResponse response = userService.verifyOtp(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<RegistrationResponse> resendOtp(@RequestParam String email) {
+        RegistrationResponse response = userService.resendOtp(email);
         return ResponseEntity.ok(response);
     }
 }
