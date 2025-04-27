@@ -4,10 +4,17 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.phatbee.cosmeticshopbackend.Utils.JsonToMapConverter;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "order_line")
 public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +22,7 @@ public class OrderLine {
 
 
     @ManyToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     @JsonManagedReference
     private Product product;
 
@@ -28,47 +35,7 @@ public class OrderLine {
     private Long quantity;
 
     @ManyToOne
-    @JoinColumn(name = "orderId", referencedColumnName = "orderId")
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     @JsonBackReference
     private Order order;
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Long getOrderLineId() {
-        return orderLineId;
-    }
-
-    public void setOrderLineId(Long orderLineId) {
-        this.orderLineId = orderLineId;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Map<String, Object> getProductSnapshot() {
-        return productSnapshot;
-    }
-
-    public void setProductSnapshot(Map<String, Object> productSnapshot) {
-        this.productSnapshot = productSnapshot;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
 }

@@ -14,8 +14,7 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int categoryID;
+    private int categoryId;
     private String categoryName;
     private String imageUrl;
-    private Boolean active;
 }
