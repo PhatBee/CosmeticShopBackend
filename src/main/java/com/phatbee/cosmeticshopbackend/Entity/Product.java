@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.time.LocalDate;
 
 
@@ -21,7 +20,7 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private int productId;
+    private Long productId;
     @ManyToOne
     @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
     private Category category;

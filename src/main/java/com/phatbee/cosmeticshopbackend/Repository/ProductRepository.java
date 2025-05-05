@@ -6,14 +6,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> findByActiveTrue();
-    List<Product> findByCategory_CategoryID(int categoryID);
+    List<Product> findByCategoryCategoryId(int categoryId);
+    Optional<Product> findByProductId(Long productId);
 
     @Query("SELECT p FROM Product p WHERE p.createdDate >= :startDate ORDER BY p.createdDate desc ")
     List<Product> findRecentProducts (@Param("startDate") LocalDate startDate);

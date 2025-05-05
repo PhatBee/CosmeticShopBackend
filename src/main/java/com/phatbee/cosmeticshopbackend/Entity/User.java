@@ -1,15 +1,15 @@
 package com.phatbee.cosmeticshopbackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.phatbee.cosmeticshopbackend.Enum.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -23,7 +23,8 @@ public class User implements Serializable {
     @Column(name = "user_id")
     private Long userId;
     private String fullName;
-    private Date birthDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
     private String phone;
     private String gender;
     private String image;
@@ -31,6 +32,7 @@ public class User implements Serializable {
     private String email;
     private String password;
     private boolean activated = false;
+
     private String otp; //One-time-password
     private int failedAttempts = 0;
     private LocalDateTime otpGeneratedAt;

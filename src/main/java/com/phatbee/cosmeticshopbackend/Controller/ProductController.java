@@ -16,6 +16,16 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<Product> getProductById(@PathVariable int productId) {
+        Product product = productService.findById(productId);
+        if (product != null) {
+            return ResponseEntity.ok(product);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
@@ -25,9 +35,9 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @GetMapping("/category/{categoryID}")
-    public ResponseEntity<List<Product>> getProductByCategory(@PathVariable int categoryID) {
-        List<Product> products = productService.getProductsByCategory(categoryID);
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<Product>> getProductByCategory(@PathVariable int categoryId) {
+        List<Product> products = productService.getProductsByCategory(categoryId);
         if (products.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -42,7 +52,6 @@ public class ProductController {
         }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
-
     @GetMapping("/top-selling")
     public ResponseEntity<List<ProductSalesDTO>> getTopSellingProducts() {
         List<ProductSalesDTO> products = productService.getTopSellingProducts();

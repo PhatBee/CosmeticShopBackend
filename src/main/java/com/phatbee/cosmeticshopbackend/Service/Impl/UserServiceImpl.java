@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
@@ -32,6 +35,8 @@ public class UserServiceImpl implements UserService {
     private UserOtpRepository otpRepository;
 
     private static final int MAX_ATTEMPTS = 3;
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 
     @Override
     public boolean authenticate(String username, String password) {
@@ -381,4 +386,45 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public User getUserById(Long userId) {
+        return userRepositoty.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public String updateUser(Long userId, UserUpdateDTO userUpdateDTO) {
+        if (userUpdateDTO.getFullName() == null || userUpdateDTO.getFullName().trim().isEmpty()) {
+            throw new RuntimeException("Full name is required");
+        }
+        if (userUpdateDTO.getPhone() == null || userUpdateDTO.getPhone().trim().isEmpty()) {
+            throw new RuntimeException("Phone number is required");
+        }
+        if (userUpdateDTO.getGender() == null || userUpdateDTO.getGender().trim().isEmpty()) {
+            throw new RuntimeException("Gender is required");
+        }
+        if (userUpdateDTO.getBirthDate() == null || userUpdateDTO.getBirthDate().trim().isEmpty()) {
+            throw new RuntimeException("Birth date is required");
+        }
+
+        User user = userRepositoty.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setFullName(userUpdateDTO.getFullName());
+        user.setPhone(userUpdateDTO.getPhone());
+        if (!isValidGender(userUpdateDTO.getGender())) {
+            throw new RuntimeException("Invalid gender value: " + userUpdateDTO.getGender());
+        }
+        user.setGender(userUpdateDTO.getGender());
+        try {
+            user.setBirthDate(LocalDate.parse(userUpdateDTO.getBirthDate(), dateFormatter));
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException("Invalid birth date format: " + userUpdateDTO.getBirthDate() + ". Expected format: yyyy-MM-dd");
+        }
+        userRepositoty.save(user);
+        return "User updated successfully";
+    }
+
+    private boolean isValidGender(String gender) {
+        return gender != null && (gender.equals("MALE") || gender.equals("FEMALE") || gender.equals("OTHER"));
+    }
 }
