@@ -3,6 +3,7 @@ package com.phatbee.cosmeticshopbackend.Controller;
 import com.phatbee.cosmeticshopbackend.Entity.User;
 import com.phatbee.cosmeticshopbackend.Service.Impl.UserServiceImpl;
 import com.phatbee.cosmeticshopbackend.dto.UserUpdateDTO;
+import com.phatbee.cosmeticshopbackend.dto.UserUpdateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO) {
-        String response = userService.updateUser(userId, userUpdateDTO);
+    public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO) {
+        UserUpdateResponse response = userService.updateUser(userId, userUpdateDTO);
         return ResponseEntity.ok(response);
     }
 

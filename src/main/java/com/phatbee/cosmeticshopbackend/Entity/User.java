@@ -23,8 +23,6 @@ public class User implements Serializable {
     @Column(name = "user_id")
     private Long userId;
     private String fullName;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthDate;
     private String phone;
     private String gender;
     private String image;

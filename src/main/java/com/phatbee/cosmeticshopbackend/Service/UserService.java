@@ -22,6 +22,6 @@ public interface UserService {
     PasswordResetResponse resendOtpPasswordReset(String email);
 
     User getUserById(Long userId);
-    String updateUser(Long userId, UserUpdateDTO userUpdateDTO);
+    UserUpdateResponse updateUser(Long userId, UserUpdateDTO userUpdateDTO);
 
 }

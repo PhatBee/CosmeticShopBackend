@@ -8,6 +8,7 @@ import com.phatbee.cosmeticshopbackend.Repository.UserOtpRepository;
 import com.phatbee.cosmeticshopbackend.Repository.UserRepositoty;
 import com.phatbee.cosmeticshopbackend.Service.UserService;
 import com.phatbee.cosmeticshopbackend.dto.*;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -393,35 +394,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateUser(Long userId, UserUpdateDTO userUpdateDTO) {
+    public UserUpdateResponse updateUser(Long userId, UserUpdateDTO userUpdateDTO) {
+        // Validate input fields
         if (userUpdateDTO.getFullName() == null || userUpdateDTO.getFullName().trim().isEmpty()) {
-            throw new RuntimeException("Full name is required");
+            throw new ValidationException("Full name is required");
         }
         if (userUpdateDTO.getPhone() == null || userUpdateDTO.getPhone().trim().isEmpty()) {
-            throw new RuntimeException("Phone number is required");
+            throw new ValidationException("Phone number is required");
         }
         if (userUpdateDTO.getGender() == null || userUpdateDTO.getGender().trim().isEmpty()) {
-            throw new RuntimeException("Gender is required");
-        }
-        if (userUpdateDTO.getBirthDate() == null || userUpdateDTO.getBirthDate().trim().isEmpty()) {
-            throw new RuntimeException("Birth date is required");
+            throw new ValidationException("Gender is required");
         }
 
+        // Find and update the user
         User user = userRepositoty.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ValidationException("User not found"));
         user.setFullName(userUpdateDTO.getFullName());
         user.setPhone(userUpdateDTO.getPhone());
         if (!isValidGender(userUpdateDTO.getGender())) {
-            throw new RuntimeException("Invalid gender value: " + userUpdateDTO.getGender());
+            throw new ValidationException("Invalid gender value: " + userUpdateDTO.getGender());
         }
         user.setGender(userUpdateDTO.getGender());
-        try {
-            user.setBirthDate(LocalDate.parse(userUpdateDTO.getBirthDate(), dateFormatter));
-        } catch (DateTimeParseException e) {
-            throw new RuntimeException("Invalid birth date format: " + userUpdateDTO.getBirthDate() + ". Expected format: yyyy-MM-dd");
-        }
+
+        // Save the updated user
         userRepositoty.save(user);
-        return "User updated successfully";
+
+        // Return a response
+        return new UserUpdateResponse(true, "User profile updated successfully");
     }
 
     private boolean isValidGender(String gender) {
