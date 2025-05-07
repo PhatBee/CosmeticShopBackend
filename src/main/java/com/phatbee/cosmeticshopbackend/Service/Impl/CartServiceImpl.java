@@ -10,6 +10,7 @@ import com.phatbee.cosmeticshopbackend.Repository.ProductRepository;
 import com.phatbee.cosmeticshopbackend.Repository.UserRepositoty;
 import com.phatbee.cosmeticshopbackend.Service.CartService;
 import com.phatbee.cosmeticshopbackend.dto.CartItemDTO;
+import com.phatbee.cosmeticshopbackend.dto.CartItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -123,6 +124,53 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.deleteAll(cart.getCartItems());
         cart.getCartItems().clear();
         cartRepository.save(cart);
+    }
+
+    @Override
+    public Cart addToCart(CartItemRequest request) {
+        // Validate user
+        Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("User not found with ID: " + request.getUserId());
+        }
+        User user = userOptional.get();
+
+        // Validate product
+        Optional<Product> productOptional = productRepository.findByProductId(request.getProductId());
+        if (!productOptional.isPresent()) {
+            throw new RuntimeException("Product not found with ID: " + request.getProductId());
+        }
+        Product product = productOptional.get();
+
+        // Find or create cart
+        Cart cart = this.getCartByUserId(user.getUserId());
+        if (cart == null) {
+
+            cart = new Cart();
+            cart.setCustomer(user);
+            cart.setCartItems(new java.util.HashSet<>());
+        }
+
+        // Check if product is already in cart
+        Optional<CartItem> existingItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getProductId().equals(request.getProductId()))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            // Update quantity
+            CartItem cartItem = existingItem.get();
+            cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
+        } else {
+            // Add new cart item
+            CartItem cartItem = new CartItem();
+            cartItem.setProduct(product);
+            cartItem.setQuantity(request.getQuantity());
+            cartItem.setCart(cart);
+            cart.getCartItems().add(cartItem);
+        }
+
+        // Save cart
+        return cartRepository.save(cart);
     }
 
 

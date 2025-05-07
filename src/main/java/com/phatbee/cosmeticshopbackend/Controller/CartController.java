@@ -19,12 +19,6 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Cart> addToCart(@RequestBody CartItemRequest request) {
-        Cart updatedCart = cartService.addItemToCart(request.getUserId(), request.getProductId(), request.getQuantity());
-        return ResponseEntity.ok(updatedCart);
-    }
-
     @PutMapping("/update")
     public ResponseEntity<Cart> updateCartItem(@RequestBody CartItemRequest request) {
         Cart updatedCart = cartService.updateCartItemQuantity(request.getUserId(), request.getProductId(), request.getQuantity());
@@ -41,5 +35,15 @@ public class CartController {
     public ResponseEntity<Void> clearCart(@PathVariable Long userId) {
         cartService.clearCart(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<Cart> addToCart(@RequestBody CartItemRequest request) {
+        try {
+            Cart updatedCart = cartService.addToCart(request);
+            return ResponseEntity.ok(updatedCart);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }
