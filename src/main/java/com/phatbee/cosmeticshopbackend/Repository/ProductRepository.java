@@ -22,4 +22,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "GROUP BY ol.product " +
             "ORDER BY totalQuantity DESC")
     List<Object[]> findTopSellingProducts();
+
+
 }

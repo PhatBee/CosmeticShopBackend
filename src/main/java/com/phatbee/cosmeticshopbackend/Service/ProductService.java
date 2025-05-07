@@ -11,4 +11,5 @@ public interface ProductService {
     List<Product> getRecentProducts();
     List<ProductSalesDTO> getTopSellingProducts();
     Product findById(int productId);
+    Product getProductById(int productID);
 }
