@@ -22,7 +22,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getProductsByCategory(int categoryID) {
-        return productRepository.findByCategory_CategoryID(categoryID);
+        return productRepository.findByCategory_CategoryId(categoryID);
     }
 
     @Override
@@ -42,5 +42,10 @@ public class ProductServiceImpl implements ProductService {
                 .map(result -> new ProductSalesDTO((Product) result[0], (Long) result[1]))
                 .limit(10)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Product getProductById(int productID) {
+        return productRepository.findById(productID).orElse(null);
     }
 }

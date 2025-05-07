@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> findByActiveTrue();
-    List<Product> findByCategory_CategoryID(int categoryID);
+    List<Product> findByCategory_CategoryId(int categoryID);
 
     @Query("SELECT p FROM Product p WHERE p.createdDate >= :startDate ORDER BY p.createdDate desc ")
     List<Product> findRecentProducts (@Param("startDate") LocalDate startDate);
@@ -21,4 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "GROUP BY ol.product " +
             "ORDER BY totalQuantity DESC")
     List<Object[]> findTopSellingProducts();
+
+
 }
