@@ -26,7 +26,7 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<Product>> getProductByCategory(@PathVariable int categoryId) {
+    public ResponseEntity<List<Product>> getProductByCategory(@PathVariable Long categoryId) {
         List<Product> products = productService.getProductsByCategory(categoryId);
         if (products.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -52,7 +52,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable int productId) {
+    public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
         Product product = productService.getProductById(productId);
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

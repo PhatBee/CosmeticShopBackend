@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AddressService {
     List<Address> getAddressesByUserId(Long userId);
+    Address addAddress(Long userId, Address address);
 }

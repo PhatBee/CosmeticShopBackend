@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Integer> {
-    List<Product> findByActiveTrue();
-    List<Product> findByCategoryCategoryId(int categoryId);
+public interface ProductRepository extends JpaRepository<Product, Long> {
+    List<Product> findByCategoryCategoryId(Long categoryId);
     Optional<Product> findByProductId(Long productId);
 
-    @Query("SELECT p FROM Product p WHERE p.createdDate >= :startDate ORDER BY p.createdDate desc ")
+    @Query("SELECT p FROM Product p WHERE p.manufactureDate >= :startDate ORDER BY p.manufactureDate desc ")
     List<Product> findRecentProducts (@Param("startDate") LocalDate startDate);
     @Query("SELECT ol.product, SUM(ol.quantity) AS totalQuantity FROM OrderLine ol " +
             "GROUP BY ol.product " +

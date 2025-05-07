@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryDTO convertToDTO(Category category) {
         return new CategoryDTO(
-                category.getCategoryId(),
+                Math.toIntExact(category.getCategoryId()),
                 category.getCategoryName(),
                 category.getImageUrl()
         );

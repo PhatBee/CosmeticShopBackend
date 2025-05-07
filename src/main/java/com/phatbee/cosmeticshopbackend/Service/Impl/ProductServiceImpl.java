@@ -17,11 +17,11 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Override
     public List<Product> getAllProducts() {
-        return productRepository.findByActiveTrue();
+        return productRepository.findAll();
     }
 
     @Override
-    public List<Product> getProductsByCategory(int categoryID) {
+    public List<Product> getProductsByCategory(Long categoryID) {
         return productRepository.findByCategoryCategoryId(categoryID);
     }
 
@@ -45,12 +45,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductById(int productID) {
+    public Product getProductById(Long productID) {
         return productRepository.findById(productID).orElse(null);
     }
 
     @Override
-    public Product findById(int productId) {
+    public Product findById(Long productId) {
         return productRepository.findById(productId).orElse(null);
     }
 }
