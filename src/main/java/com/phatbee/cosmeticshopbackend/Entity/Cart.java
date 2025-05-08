@@ -18,6 +18,7 @@ public class Cart implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cart_id")
     private Long cartId;
 
     // những cartitem không còn trong cart nữa, dưới db vẫn còn tham chiếu, dùng orphanRemoval = true để xoá dưới db

@@ -3,13 +3,12 @@ package com.phatbee.cosmeticshopbackend.Entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,7 +34,9 @@ public class User implements Serializable {
     private int failedAttempts = 0;
     private LocalDateTime otpGeneratedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<Order> orders;
+    private List<Address> addresses;
 }

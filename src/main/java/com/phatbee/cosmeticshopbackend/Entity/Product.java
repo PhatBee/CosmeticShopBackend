@@ -1,10 +1,9 @@
 package com.phatbee.cosmeticshopbackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -21,9 +20,6 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Long productId;
-    @ManyToOne
-    @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
-    private Category category;
     private String productName;
     private String productCode;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -47,4 +43,12 @@ public class Product implements Serializable {
     private String description;
     private String volume;
     private Boolean active;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    private Category category;
+
 }

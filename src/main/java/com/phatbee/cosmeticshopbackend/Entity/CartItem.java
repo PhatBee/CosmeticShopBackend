@@ -28,6 +28,6 @@ public class CartItem implements Serializable {
     @EqualsAndHashCode.Exclude
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "cartId", referencedColumnName = "cartId")
+    @JoinColumn(name = "cart_id", referencedColumnName = "cart_id")
     private Cart cart;
 }

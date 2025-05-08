@@ -19,21 +19,29 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private int orderId;
+
+    private Long customerId;
     private LocalDateTime orderDate;
     private Double total;
     private String orderStatus;
     private LocalDateTime deliveryDate;
 
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<OrderLine> orderLines;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "user_id")
-    @JsonBackReference
-    private User user;
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private ShippingAddress shippingAddress;
+
+//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    private List<OrderStatusHistory> orderStatusHistories;
+//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+//    @JsonManagedReference
+//    private Payment payment;
 
 
 }
