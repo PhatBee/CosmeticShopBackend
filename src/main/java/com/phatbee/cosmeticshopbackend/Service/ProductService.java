@@ -12,4 +12,5 @@ public interface ProductService {
     List<ProductSalesDTO> getTopSellingProducts();
     Product findById(Long productId);
     Product getProductById(Long productID);
+    List<Product> searchProducts(String keyword);
 }

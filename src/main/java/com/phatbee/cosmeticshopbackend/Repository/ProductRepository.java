@@ -22,5 +22,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "ORDER BY totalQuantity DESC")
     List<Object[]> findTopSellingProducts();
 
-
+    @Query("SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Product> searchProducts(@Param("keyword") String keyword);
 }

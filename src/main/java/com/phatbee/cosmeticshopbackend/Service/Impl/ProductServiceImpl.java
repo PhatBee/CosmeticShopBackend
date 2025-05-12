@@ -50,6 +50,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> searchProducts(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return productRepository.findAll(); // Trả về tất cả sản phẩm nếu từ khóa rỗng
+        }
+//        return productRepository.searchProducts(keyword);
+        return productRepository.searchProducts(keyword.trim());
+    }
+
+    @Override
     public Product findById(Long productId) {
         return productRepository.findById(productId).orElse(null);
     }

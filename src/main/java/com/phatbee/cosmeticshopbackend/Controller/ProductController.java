@@ -60,5 +60,12 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
+        List<Product> products = productService.searchProducts(keyword);
+        if (products.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
 }
