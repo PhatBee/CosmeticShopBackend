@@ -24,6 +24,7 @@ public class Product implements Serializable {
     private Long productId;
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    @JsonBackReference
     private Category category;
     private String productName;
     private String productCode;
