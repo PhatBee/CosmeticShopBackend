@@ -35,17 +35,30 @@ public class AddressServiceImpl implements AddressService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Set the customer relationship
-        address.setCustomer(user);
+//        // Set the customer relationship
+//        address.setCustomer(user);
+//
+//        if (address.isDefault()) {
+//            // Đặt các địa chỉ khác thành không mặc định
+//            addressRepository.findByCustomerUserId(userId).forEach(addr -> {
+//                addr.setDefault(false);
+//                addressRepository.save(addr);
+//            });
+//        }
 
-        if (address.isDefault()) {
-            // Đặt các địa chỉ khác thành không mặc định
-            addressRepository.findByCustomerUserId(userId).forEach(addr -> {
-                addr.setDefault(false);
-                addressRepository.save(addr);
+        // Kiểm tra số lượng địa chỉ của user
+        List<Address> existingAddresses = addressRepository.findByCustomerUserId(userId);
+        if (existingAddresses.isEmpty()) {
+            address.setDefaultAddress(true); // Địa chỉ đầu tiên tự động là mặc định
+        } else if (address.isDefaultAddress()) {
+            // Nếu địa chỉ mới được đặt là mặc định, đặt các địa chỉ khác thành không mặc định
+            existingAddresses.forEach(a -> {
+                a.setDefaultAddress(false);
+                addressRepository.save(a);
             });
         }
 
+        address.setCustomer(user);
         // Save the address
         return addressRepository.save(address);
     }
@@ -64,6 +77,25 @@ public class AddressServiceImpl implements AddressService {
             throw new RuntimeException("Address not found");
         }
 
+        // Xử lý địa chỉ mặc định
+        if (updatedAddress.isDefaultAddress()) {
+            // Đặt các địa chỉ khác thành không mặc định
+
+//            addressRepository.findByCustomerUserId(userId).forEach(addr -> {
+//                if (!addr.getAddressId().equals(address.getAddressId())) {
+//                    addr.setDefault(false);
+//                    addressRepository.save(addr);
+//                }
+
+            List<Address> existingAddresses = addressRepository.findDefaultAddresses(userId);
+            existingAddresses.forEach(a -> {
+                if (!a.getAddressId().equals(updatedAddress.getAddressId())) {
+                    a.setDefaultAddress(false);
+                    addressRepository.save(a);
+                }
+            });
+        }
+
         // Cập nhật thông tin địa chỉ
         address.setReceiverName(updatedAddress.getReceiverName());
         address.setReceiverPhone(updatedAddress.getReceiverPhone());
@@ -71,21 +103,7 @@ public class AddressServiceImpl implements AddressService {
         address.setProvince(updatedAddress.getProvince());
         address.setDistrict(updatedAddress.getDistrict());
         address.setWard(updatedAddress.getWard());
-
-
-        // Xử lý địa chỉ mặc định
-        if (updatedAddress.isDefault()) {
-            // Đặt các địa chỉ khác thành không mặc định
-            addressRepository.findByCustomerUserId(userId).forEach(addr -> {
-                if (!addr.getAddressId().equals(address.getAddressId())) {
-                    addr.setDefault(false);
-                    addressRepository.save(addr);
-                }
-            });
-            address.setDefault(true);
-        } else {
-            address.setDefault(false);
-        }
+        address.setDefaultAddress(updatedAddress.isDefaultAddress());
 
         return addressRepository.save(address);
     }
@@ -110,7 +128,7 @@ public class AddressServiceImpl implements AddressService {
     public Address getDefaultAddress(Long userId) {
         List<Address> addresses = addressRepository.findByCustomerUserId(userId);
         return addresses.stream()
-                .filter(Address::isDefault)
+                .filter(Address::isDefaultAddress)
                 .findFirst()
                 .orElse(null); // Return null if no default address is found
     }

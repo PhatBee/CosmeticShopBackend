@@ -27,7 +27,8 @@ public class Address implements Serializable {
     private String district;
     @Column(columnDefinition = "text")
     private String ward;
-    private boolean isDefault;
+    @Column(name = "is_default")
+    private boolean defaultAddress;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
