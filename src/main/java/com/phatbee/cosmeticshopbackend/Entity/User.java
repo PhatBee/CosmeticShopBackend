@@ -34,9 +34,11 @@ public class User implements Serializable {
     private int failedAttempts = 0;
     private LocalDateTime otpGeneratedAt;
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "order-user")
+    private Set<Order> orders;
+
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Address> addresses;
+    @JsonManagedReference(value = "address-customer")
+    private Set<Address> addresses;
 }

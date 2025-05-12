@@ -7,7 +7,7 @@ import com.phatbee.cosmeticshopbackend.Entity.User;
 import com.phatbee.cosmeticshopbackend.Repository.CartItemRepository;
 import com.phatbee.cosmeticshopbackend.Repository.CartRepository;
 import com.phatbee.cosmeticshopbackend.Repository.ProductRepository;
-import com.phatbee.cosmeticshopbackend.Repository.UserRepositoty;
+import com.phatbee.cosmeticshopbackend.Repository.UserRepository;
 import com.phatbee.cosmeticshopbackend.Service.CartService;
 import com.phatbee.cosmeticshopbackend.dto.CartItemDTO;
 import com.phatbee.cosmeticshopbackend.dto.CartItemRequest;
@@ -29,7 +29,7 @@ public class CartServiceImpl implements CartService {
     private CartItemRepository cartItemRepository;
 
     @Autowired
-    private UserRepositoty userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -131,14 +131,14 @@ public class CartServiceImpl implements CartService {
         // Validate user
         Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
         if (!userOptional.isPresent()) {
-            throw new RuntimeException("User not found with ID: " + request.getUserId());
+            throw new RuntimeException("User not found");
         }
         User user = userOptional.get();
 
         // Validate product
         Optional<Product> productOptional = productRepository.findByProductId(request.getProductId());
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found with ID: " + request.getProductId());
+            throw new RuntimeException("Product not found");
         }
         Product product = productOptional.get();
 

@@ -25,11 +25,12 @@ public class Address {
     private String district;
     @Column(columnDefinition = "text")
     private String ward;
+    private boolean isDefault;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "address-customer")
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User customer;
 }
