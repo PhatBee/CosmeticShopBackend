@@ -27,12 +27,12 @@ public class Order {
 //    @ToString.Exclude
 //    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference(value = "order-orderline")
     private Set<OrderLine> orderLines;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "user_id")
-    @JsonBackReference
+    @JsonBackReference(value = "order-user")
     private User user;
 
 

@@ -36,6 +36,10 @@ public class User implements Serializable {
     private LocalDateTime otpGeneratedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "order-user")
     private Set<Order> orders;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "address-customer")
+    private Set<Address> addresses;
 }

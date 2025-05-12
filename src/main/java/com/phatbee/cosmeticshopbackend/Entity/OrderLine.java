@@ -23,7 +23,7 @@ public class OrderLine {
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "product_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Product product;
 
 
@@ -36,6 +36,6 @@ public class OrderLine {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
-    @JsonBackReference
+    @JsonBackReference(value = "order-orderline")
     private Order order;
 }

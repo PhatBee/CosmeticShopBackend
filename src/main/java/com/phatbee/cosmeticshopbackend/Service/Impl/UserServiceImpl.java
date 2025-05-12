@@ -3,9 +3,8 @@ package com.phatbee.cosmeticshopbackend.Service.Impl;
 import com.phatbee.cosmeticshopbackend.Config.OTPGenerator;
 import com.phatbee.cosmeticshopbackend.Entity.User;
 import com.phatbee.cosmeticshopbackend.Entity.UserOtp;
-import com.phatbee.cosmeticshopbackend.Enum.Gender;
 import com.phatbee.cosmeticshopbackend.Repository.UserOtpRepository;
-import com.phatbee.cosmeticshopbackend.Repository.UserRepositoty;
+import com.phatbee.cosmeticshopbackend.Repository.UserRepository;
 import com.phatbee.cosmeticshopbackend.Service.UserService;
 import com.phatbee.cosmeticshopbackend.dto.*;
 import jakarta.validation.ValidationException;
@@ -13,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
@@ -24,7 +21,7 @@ import java.util.Random;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private UserRepositoty userRepositoty;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,17 +38,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean authenticate(String username, String password) {
-        return userRepositoty.findByUsername(username)
+        return userRepository.findByUsername(username)
                 .map(user -> passwordEncoder.matches(password, user .getPassword()) && user.isActivated())
                 .orElse(false);
     }
 
     @Override
     public String registerUser(String username, String email, String password, String fullName, Date birthday, String gender, String phone, String imageUrl) {
-        if (userRepositoty.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
-        if (userRepositoty.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already registered");
         }
         String otp = OTPGenerator.generateOTP();
@@ -66,14 +63,14 @@ public class UserServiceImpl implements UserService {
         user.setImage(imageUrl);
         user.setOtp(otp);
         user.setOtpGeneratedAt(LocalDateTime.now());
-        userRepositoty.save(user);
+        userRepository.save(user);
 
         return "Registration successful. Please check your email for the OTP.";
     }
 
     @Override
     public String activateAccount(String email, String otp) {
-        User user = userRepositoty.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid Exception, No user found"));
 
         if (user.isActivated()){
@@ -82,10 +79,10 @@ public class UserServiceImpl implements UserService {
 
         if (!otp.equals(user.getOtp())) {
             user.setFailedAttempts(user.getFailedAttempts() + 1);
-            userRepositoty.save(user);
+            userRepository.save(user);
 
             if (user.getFailedAttempts() >= MAX_ATTEMPTS) {
-                userRepositoty.delete(user);
+                userRepository.delete(user);
                 throw new RuntimeException("Too many attempts, Account registration has been canceled");
             }
             throw new RuntimeException("Invalid OTP. Please try again");
@@ -94,13 +91,13 @@ public class UserServiceImpl implements UserService {
         user.setActivated(true);
         user.setOtp(null);
         user.setFailedAttempts(0);
-        userRepositoty.save(user);
+        userRepository.save(user);
         return "Activated successful";
     }
 
     @Override
     public String resendOtp1(String email) {
-        User user = userRepositoty.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (user.isActivated()) {
@@ -115,7 +112,7 @@ public class UserServiceImpl implements UserService {
         String newOtp = OTPGenerator.generateOTP();
         user.setOtp(newOtp);
         user.setOtpGeneratedAt(now);
-        userRepositoty.save(user);
+        userRepository.save(user);
 
         emailService.sendOtp(user.getEmail(), newOtp);
         return "A new OTP has been sent to your email.";
@@ -123,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String sendOtpForPasswordReset(String email) {
-        User user = userRepositoty.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (!user.isActivated()) {
             throw new RuntimeException("User is not activated, Please contact administrator");
@@ -133,14 +130,14 @@ public class UserServiceImpl implements UserService {
         emailService.sendOtp(email, otp);
         user.setOtp(otp);
         user.setOtpGeneratedAt(LocalDateTime.now());
-        userRepositoty.save(user);
+        userRepository.save(user);
         return "A new OTP has been sent to your email.";
 
     }
 
     @Override
     public String resetPassword(String email, String otp, String newPassword) {
-        User user = userRepositoty.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid Exception, No user found"));
 
         if (user.getOtp() == null || !user.getOtp().equals(otp)) {
@@ -154,14 +151,14 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setOtp(null);
-        userRepositoty.save(user);
+        userRepository.save(user);
 
         return "Password reset successful";
     }
 
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest) {
-        Optional<User> userOptional = userRepositoty.findByUsername(loginRequest.getUsername());
+        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
 
         if (!userOptional.isPresent()) {
             return new LoginResponse(false, "User not found", null);
@@ -188,12 +185,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegistrationResponse register(RegistrationRequest request) {
         // Check if username already exists
-        if (userRepositoty.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             return new RegistrationResponse(false, "Username already exists");
         }
 
         // Check if email already exists
-        if (userRepositoty.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             return new RegistrationResponse(false, "Email already registered");
         }
 
@@ -246,7 +243,7 @@ public class UserServiceImpl implements UserService {
         user.setGender(userOtp.getGender());
 
         // Save user
-        userRepositoty.save(user);
+        userRepository.save(user);
 
         // Delete OTP entry
         otpRepository.delete(userOtp);
@@ -285,7 +282,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PasswordResetResponse requestPasswordReset(String email) {
         // Check if user with email exists
-        Optional<User> userOptional = userRepositoty.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByEmail(email);
         if (!userOptional.isPresent()) {
             // For security reasons, don't reveal that email doesn't exist
             return new PasswordResetResponse(true, "If your email is registered, you will receive a password reset code");
@@ -334,7 +331,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Find user
-        Optional<User> userOptional = userRepositoty.findByEmail(request.getEmail());
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
         if (!userOptional.isPresent()) {
             return new PasswordResetResponse(false, "User not found");
         }
@@ -348,7 +345,7 @@ public class UserServiceImpl implements UserService {
 
         // Update password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepositoty.save(user);
+        userRepository.save(user);
 
         // Delete OTP entry
         otpRepository.delete(passwordResetOtp);
@@ -359,7 +356,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PasswordResetResponse resendOtpPasswordReset(String email) {
         // Check if user with email exists
-        Optional<User> userOptional = userRepositoty.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByEmail(email);
         if (!userOptional.isPresent()) {
             // For security reasons, don't reveal that email doesn't exist
             return new PasswordResetResponse(true, "If your email is registered, you will receive a password reset code");
@@ -389,7 +386,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long userId) {
-        return userRepositoty.findByUserId(userId)
+        return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
@@ -407,7 +404,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Find and update the user
-        User user = userRepositoty.findByUserId(userId)
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new ValidationException("User not found"));
         user.setFullName(userUpdateDTO.getFullName());
         user.setPhone(userUpdateDTO.getPhone());
@@ -417,7 +414,7 @@ public class UserServiceImpl implements UserService {
         user.setGender(userUpdateDTO.getGender());
 
         // Save the updated user
-        userRepositoty.save(user);
+        userRepository.save(user);
 
         // Return a response
         return new UserUpdateResponse(true, "User profile updated successfully");
