@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.phatbee.cosmeticshopbackend.Utils.JsonToMapConverter;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Entity
@@ -15,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "order_line")
-public class OrderLine {
+public class OrderLine implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderLineId;
@@ -23,7 +22,9 @@ public class OrderLine {
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "product_id")
-    @JsonBackReference
+    @JsonBackReference(value = "product-orderline")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Product product;
 
 
@@ -37,5 +38,7 @@ public class OrderLine {
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     @JsonBackReference(value = "order-orderline")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Order order;
 }

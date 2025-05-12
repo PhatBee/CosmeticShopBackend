@@ -1,12 +1,16 @@
 package com.phatbee.cosmeticshopbackend.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.phatbee.cosmeticshopbackend.Enum.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,11 +18,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "orders")
-public class Order {
+public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private int orderId;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderDate;
     private Double total;
     private String orderStatus;
@@ -35,5 +41,14 @@ public class Order {
     @JsonBackReference(value = "order-user")
     private User user;
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonManagedReference
+    private Payment payment;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private ShippingAddress shippingAddress;
 
 }

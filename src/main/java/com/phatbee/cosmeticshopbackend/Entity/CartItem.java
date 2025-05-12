@@ -18,8 +18,10 @@ public class CartItem implements Serializable {
 
 
     @ManyToOne
-    @JsonManagedReference
+//    @JsonBackReference(value = "product-cartitem")
     @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Product product;
 
     private Long quantity;
@@ -27,7 +29,7 @@ public class CartItem implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "cart-cartitem")
     @JoinColumn(name = "cart_id", referencedColumnName = "cart_id")
     private Cart cart;
 }

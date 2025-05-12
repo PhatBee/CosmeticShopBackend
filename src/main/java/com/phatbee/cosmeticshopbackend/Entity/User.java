@@ -36,9 +36,15 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "order-user")
-    private Set<Order> orders;
+    private List<Order> orders;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "address-customer")
     private Set<Address> addresses;
+
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonManagedReference(value = "cart_customer")
+    private Cart cart;
 }
