@@ -23,7 +23,7 @@ public class Product implements Serializable {
     @Column(name = "product_id")
     private Long productId;
     @ManyToOne
-    @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
     private String productName;
     private String productCode;

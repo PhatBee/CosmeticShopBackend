@@ -64,5 +64,14 @@ public class AddressController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/default/{userId}")
+    public ResponseEntity<Address> getDefaultAddress(@PathVariable Long userId) {
+        Address defaultAddress = addressService.getDefaultAddress(userId);
+        if (defaultAddress == null) {
+            return ResponseEntity.status(404).body(null);
+        }
+        return ResponseEntity.ok(defaultAddress);
+    }
+
 
 }

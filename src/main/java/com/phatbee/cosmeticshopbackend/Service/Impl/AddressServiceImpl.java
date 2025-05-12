@@ -105,4 +105,13 @@ public class AddressServiceImpl implements AddressService {
         }
         addressRepository.deleteById(addressId);
     }
+
+    @Override
+    public Address getDefaultAddress(Long userId) {
+        List<Address> addresses = addressRepository.findByCustomerUserId(userId);
+        return addresses.stream()
+                .filter(Address::isDefault)
+                .findFirst()
+                .orElse(null); // Return null if no default address is found
+    }
 }
