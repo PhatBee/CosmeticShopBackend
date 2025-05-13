@@ -22,9 +22,9 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public List<Address> getAddressesByUserId(Long userId) {
         List<Address> addresses = addressRepository.findByCustomerUserId(userId);
-        if (addresses.isEmpty()) {
-            throw new RuntimeException("Address is not found");
-        }
+//        if (addresses.isEmpty()) {
+//            throw new RuntimeException("Address is not found");
+//        }
         return addresses;
     }
 

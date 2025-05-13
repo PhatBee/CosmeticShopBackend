@@ -64,4 +64,10 @@ public class Product implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<CartItem> cart_items;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonBackReference(value = "product-wishlist")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Wishlist> wishlists;
 }
