@@ -1,9 +1,6 @@
 package com.phatbee.cosmeticshopbackend.Controller;
 
-import com.phatbee.cosmeticshopbackend.dto.OrderLineRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.OrderRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.PaymentRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.ShippingAddressRequestDTO;
+import com.phatbee.cosmeticshopbackend.dto.*;
 import com.phatbee.cosmeticshopbackend.Entity.Order;
 import com.phatbee.cosmeticshopbackend.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -55,5 +53,11 @@ public class OrderController {
     public ResponseEntity<Void> clearCart(@PathVariable Long userId) {
         orderService.clearCart(userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("orders/user/{userId}")
+    public ResponseEntity<Map<String, List<Order>>> getOrdersByUserId(@PathVariable Long userId) {
+        Map<String, List<Order>> orders = orderService.getOrdersByUserId(userId);
+        return ResponseEntity.ok(orders);
     }
 }

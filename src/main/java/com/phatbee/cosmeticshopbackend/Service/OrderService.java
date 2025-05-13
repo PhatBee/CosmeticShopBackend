@@ -1,12 +1,10 @@
 package com.phatbee.cosmeticshopbackend.Service;
 
 import com.phatbee.cosmeticshopbackend.Entity.Order;
-import com.phatbee.cosmeticshopbackend.dto.OrderLineRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.OrderRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.PaymentRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.ShippingAddressRequestDTO;
+import com.phatbee.cosmeticshopbackend.dto.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderService {
     Order createOrder(OrderRequestDTO orderRequestDTO);
@@ -15,4 +13,7 @@ public interface OrderService {
     void createShippingAddress(ShippingAddressRequestDTO shippingAddressRequestDTO, int orderId);
     void clearCart(Long userId);
     Order getLastOrder();
+
+    Map<String, List<Order>> getOrdersByUserId(Long userId);
+
 }

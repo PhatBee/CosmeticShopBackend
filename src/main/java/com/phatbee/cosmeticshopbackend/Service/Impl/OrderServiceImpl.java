@@ -3,17 +3,13 @@ package com.phatbee.cosmeticshopbackend.Service.Impl;
 import com.phatbee.cosmeticshopbackend.Entity.*;
 import com.phatbee.cosmeticshopbackend.Repository.*;
 import com.phatbee.cosmeticshopbackend.Service.OrderService;
-import com.phatbee.cosmeticshopbackend.dto.OrderLineRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.OrderRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.PaymentRequestDTO;
-import com.phatbee.cosmeticshopbackend.dto.ShippingAddressRequestDTO;
+import com.phatbee.cosmeticshopbackend.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -149,4 +145,42 @@ public class OrderServiceImpl implements OrderService {
         if (orders.isEmpty()) return null;
         return orders.get(orders.size() - 1);
     }
+
+    @Override
+    public Map<String, List<Order>> getOrdersByUserId(Long userId) {
+        List<Order> orders = orderRepository.findByUserUserId(userId);
+        Map<String, List<Order>> categorizedOrders = new HashMap<>();
+
+        List<Order> activeOrders = new ArrayList<>();
+        List<Order> completedOrders = new ArrayList<>();
+        List<Order> cancelledOrders = new ArrayList<>();
+        for (Order order : orders) {
+            String status = order.getOrderStatus();
+            if (status == null) continue;
+
+            switch (status) {
+                case "PENDING":
+                case "PROCESSING":
+                case "SHIPPING":
+                    activeOrders.add(order);
+                    break;
+                case "DELIVERED":
+                    completedOrders.add(order);
+                    break;
+                case "CANCELLED":
+                    cancelledOrders.add(order);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        categorizedOrders.put("active", activeOrders);
+        categorizedOrders.put("completed", completedOrders);
+        categorizedOrders.put("cancelled", cancelledOrders);
+
+        return categorizedOrders;
+    }
+
+
 }
