@@ -29,6 +29,7 @@ public class Order implements Serializable {
     private Double total;
     private String orderStatus;
     private LocalDateTime deliveryDate;
+    private String transactionId;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

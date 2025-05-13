@@ -8,8 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -181,6 +189,91 @@ public class OrderServiceImpl implements OrderService {
 
         return categorizedOrders;
     }
+
+
+    public String generateTransactionId() {
+        Random random = new Random();
+        return "TXN" + System.currentTimeMillis() + random.nextInt(1000);
+    }
+
+    @Override
+    public void updateOrderPaymentStatus(String txnRef, String status, Double amount) {
+        // Logic cập nhật trạng thái đơn hàng trong database
+        // Giả sử bạn có repository để truy vấn và cập nhật
+        Order order = orderRepository.findByTransactionId(txnRef); // Cần triển khai repository
+        if (order != null) {
+            order.getPayment().setPaymentStatus(status);
+            order.getPayment().setTotal(amount);
+            orderRepository.save(order);
+        }
+    }
+
+    public String hashAllFields(Map<String, String> fields, String secretKey) {
+        List<String> fieldNames = new ArrayList<>(fields.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<String> itr = fieldNames.iterator(); itr.hasNext();) {
+            String fieldName = itr.next();
+            String fieldValue = fields.get(fieldName);
+            if (fieldValue != null && !fieldValue.isEmpty()) {
+                sb.append(fieldName).append("=").append(fieldValue);
+                if (itr.hasNext()) {
+                    sb.append("&");
+                }
+            }
+        }
+        return hmacSHA512(secretKey, sb.toString());
+    }
+
+    public String hmacSHA512(String key, String data) {
+        try {
+            Mac hmac512 = Mac.getInstance("HmacSHA512");
+            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+            hmac512.init(secretKey);
+            byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
+            byte[] result = hmac512.doFinal(dataBytes);
+            StringBuilder sb = new StringBuilder(2 * result.length);
+            for (byte b : result) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException("Error hashing data", e);
+        }
+    }
+
+    public String hashHMAC512(String data, String secretKey) {
+        try {
+            Mac hmac512 = Mac.getInstance("HmacSHA512");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+            hmac512.init(secretKeySpec);
+            byte[] bytes = hmac512.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hash = new StringBuilder();
+            for (byte b : bytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hash.append('0');
+                hash.append(hex);
+            }
+            return hash.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Hash error", e);
+        }
+    }
+
+
+    public String toQueryString(Map<String, String> params) {
+        StringBuilder queryString = new StringBuilder();
+        params.entrySet().stream()
+                .filter(e -> e.getValue() != null && !e.getValue().isEmpty())
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e -> queryString.append(e.getKey()).append("=").append(e.getValue()).append("&"));
+        if (queryString.length() > 0) {
+            queryString.setLength(queryString.length() - 1);
+        }
+        return queryString.toString();
+    }
+
+
 
 
 }

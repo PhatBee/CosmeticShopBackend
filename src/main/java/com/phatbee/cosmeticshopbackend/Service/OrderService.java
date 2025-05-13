@@ -15,5 +15,10 @@ public interface OrderService {
     Order getLastOrder();
 
     Map<String, List<Order>> getOrdersByUserId(Long userId);
+    String toQueryString(Map<String, String> params);
+    String hashHMAC512(String data, String secretKey);
+    String generateTransactionId();
+    void updateOrderPaymentStatus(String txnRef, String status, Double amount);
 
+    String hashAllFields(Map<String, String> vnpParams, String hashSecret);
 }
