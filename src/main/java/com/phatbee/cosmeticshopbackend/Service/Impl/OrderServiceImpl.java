@@ -10,14 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -223,6 +220,20 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return hmacSHA512(secretKey, sb.toString());
+    }
+
+    @Override
+    public void cancelOrder(int orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            throw new RuntimeException("Order not found with ID: " + orderId);
+        }
+        if (!"PENDING".equals(order.getOrderStatus())) {
+            throw new RuntimeException("Order is not PENDING");
+        }
+
+        order.setOrderStatus("CANCELLED");
+        orderRepository.save(order);
     }
 
     public String hmacSHA512(String key, String data) {

@@ -3,7 +3,6 @@ package com.phatbee.cosmeticshopbackend.Controller;
 import com.phatbee.cosmeticshopbackend.dto.*;
 import com.phatbee.cosmeticshopbackend.Entity.Order;
 import com.phatbee.cosmeticshopbackend.Service.OrderService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -11,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +75,12 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @PostMapping("orders/cancel/{orderId}")
+    public ResponseEntity<Void> cancelOrder(@PathVariable int orderId) {
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/orders/create-vnpay-url")
     public ResponseEntity<String> createVNPayPaymentUrl(@RequestParam Long userId, @RequestBody Map<String, String> paymentData) {
         double amount = Double.parseDouble(paymentData.get("amount"));
@@ -118,4 +120,6 @@ public class OrderController {
         headers.setLocation(URI.create(redirectUrl));
         return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
     }
+
+
 }

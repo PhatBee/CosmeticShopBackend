@@ -21,4 +21,6 @@ public interface OrderService {
     void updateOrderPaymentStatus(String txnRef, String status, Double amount);
 
     String hashAllFields(Map<String, String> vnpParams, String hashSecret);
+
+    void cancelOrder(int orderId);
 }
