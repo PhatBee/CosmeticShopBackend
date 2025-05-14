@@ -152,14 +152,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map<String, List<Order>> getOrdersByUserId(Long userId) {
+    public Map<String, List<OrderDTO>> getOrdersByUserId(Long userId) {
         List<Order> orders = orderRepository.findByUserUserId(userId);
-        Map<String, List<Order>> categorizedOrders = new HashMap<>();
+        Map<String, List<OrderDTO>> categorizedOrders = new HashMap<>();
 
-        List<Order> activeOrders = new ArrayList<>();
-        List<Order> completedOrders = new ArrayList<>();
-        List<Order> cancelledOrders = new ArrayList<>();
+        List<OrderDTO> activeOrders = new ArrayList<>();
+        List<OrderDTO> completedOrders = new ArrayList<>();
+        List<OrderDTO> cancelledOrders = new ArrayList<>();
         for (Order order : orders) {
+            OrderDTO orderDTO = new OrderDTO(order);
             String status = order.getOrderStatus();
             if (status == null) continue;
 
@@ -167,13 +168,13 @@ public class OrderServiceImpl implements OrderService {
                 case "PENDING":
                 case "PROCESSING":
                 case "SHIPPING":
-                    activeOrders.add(order);
+                    activeOrders.add(orderDTO);
                     break;
                 case "DELIVERED":
-                    completedOrders.add(order);
+                    completedOrders.add(orderDTO);
                     break;
                 case "CANCELLED":
-                    cancelledOrders.add(order);
+                    cancelledOrders.add(orderDTO);
                     break;
                 default:
                     break;

@@ -14,7 +14,7 @@ public interface OrderService {
     void clearCart(Long userId);
     Order getLastOrder();
 
-    Map<String, List<Order>> getOrdersByUserId(Long userId);
+    Map<String, List<OrderDTO>> getOrdersByUserId(Long userId);
     String toQueryString(Map<String, String> params);
     String hashHMAC512(String data, String secretKey);
     String generateTransactionId();

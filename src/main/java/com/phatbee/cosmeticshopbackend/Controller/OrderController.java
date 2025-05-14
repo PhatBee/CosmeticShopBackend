@@ -70,8 +70,8 @@ public class OrderController {
     }
 
     @GetMapping("/orders/user/{userId}")
-    public ResponseEntity<Map<String, List<Order>>> getOrdersByUserId(@PathVariable Long userId) {
-        Map<String, List<Order>> orders = orderService.getOrdersByUserId(userId);
+    public ResponseEntity<Map<String, List<OrderDTO>>> getOrdersByUserId(@PathVariable Long userId) {
+        Map<String, List<OrderDTO>> orders = orderService.getOrdersByUserId(userId);
         return ResponseEntity.ok(orders);
     }
 
