@@ -1,5 +1,6 @@
 package com.phatbee.cosmeticshopbackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class Category implements Serializable {
     private String imageUrl;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "category-product")
+//    @JsonManagedReference(value = "category-product")
+    @JsonIgnore
     private List<Product> products;
 }
