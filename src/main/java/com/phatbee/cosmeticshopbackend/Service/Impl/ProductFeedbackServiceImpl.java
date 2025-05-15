@@ -56,4 +56,9 @@ public class ProductFeedbackServiceImpl implements ProductFeedbackService {
     public List<ProductFeedbackDTO> getFeedbackByOrderId(Long orderId) {
         List<ProductFeedback> feedbackList = feedbackRepository.findByOrderId(orderId);
         return feedbackList.stream().map(ProductFeedbackDTO::new).collect(Collectors.toList());    }
+
+    @Override
+    public List<ProductFeedback> findByProductProductId(Long productId) {
+        return feedbackRepository.findByProductProductId(productId);
+    }
 }
