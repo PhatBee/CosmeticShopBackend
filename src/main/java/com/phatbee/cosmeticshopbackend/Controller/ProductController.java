@@ -68,4 +68,11 @@ public class ProductController {
         }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+    @PostMapping("/products/status")
+    public ResponseEntity<List<Product>> getProductsStatus(@RequestBody List<Long> productIds) {
+        List<Product> products = productService.getProductsByIds(productIds);
+        return ResponseEntity.ok(products);
+    }
+
 }
