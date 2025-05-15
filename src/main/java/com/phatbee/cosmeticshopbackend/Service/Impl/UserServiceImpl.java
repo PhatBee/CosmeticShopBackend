@@ -412,6 +412,7 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("Invalid gender value: " + userUpdateDTO.getGender());
         }
         user.setGender(userUpdateDTO.getGender());
+        user.setImage(userUpdateDTO.getImage());
 
         // Save the updated user
         userRepository.save(user);
