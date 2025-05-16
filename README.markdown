@@ -3,7 +3,6 @@
 **Backend Cosmetic Shop** là hệ thống backend hỗ trợ ứng dụng Android **Cosmetic Shop**, một nền tảng thương mại điện tử chuyên về mỹ phẩm. Backend cung cấp các API RESTful để quản lý tài khoản người dùng, danh mục sản phẩm, giỏ hàng, đơn hàng, thanh toán, đánh giá sản phẩm, và địa chỉ giao hàng. Dự án được phát triển trong khuôn khổ môn **Lập trình di động** tại Trường Đại học Sư phạm Kỹ thuật TP.HCM (HCMUTE) bởi Nhóm 38.
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/PhatBee/CosmeticShopBackend)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Mục Lục
 - [Giới Thiệu Dự Án](#giới-thiệu-dự-án)
@@ -45,7 +44,6 @@
   - Spring Data JPA (quản lý cơ sở dữ liệu)
   - Lombok (giảm mã boilerplate)
   - MySQL Connector (kết nối cơ sở dữ liệu)
-  - Cloudinary SDK (quản lý hình ảnh)
 
 ## Cài Đặt
 
@@ -56,7 +54,6 @@
 - **IntelliJ IDEA**: Khuyến nghị cho phát triển
 - **Postman**: Dùng để kiểm tra API
 - **Git**: Để clone repository
-- **Tài khoản Cloudinary**: Để lưu trữ hình ảnh
 
 ### Các Bước Cài Đặt
 1. **Clone Repository**
@@ -79,29 +76,20 @@
      spring.jpa.show-sql=true
      ```
 
-3. **Cấu Hình Cloudinary**
-   - Tạo tài khoản Cloudinary và lấy thông tin API.
-   - Thêm vào `application.properties`:
-     ```properties
-     cloudinary.cloud-name=your_cloud_name
-     cloudinary.api-key=your_api_key
-     cloudinary.api-secret=your_api_secret
-     ```
-
-4. **Cài Đặt Thư Viện**
+3. **Cài Đặt Thư Viện**
    - Chạy lệnh sau để tải các thư viện:
      ```bash
      mvn clean install
      ```
 
-5. **Chạy Ứng Dụng**
+4. **Chạy Ứng Dụng**
    - Khởi động ứng dụng Spring Boot:
      ```bash
      mvn spring-boot:run
      ```
    - Backend sẽ hoạt động tại `http://localhost:8080`.
 
-6. **Kiểm Tra Cài Đặt**
+5. **Kiểm Tra Cài Đặt**
    - Sử dụng Postman để gửi yêu cầu GET tới `http://localhost:8080/api/health` (nếu đã triển khai):
      ```json
      {"status": "UP"}
