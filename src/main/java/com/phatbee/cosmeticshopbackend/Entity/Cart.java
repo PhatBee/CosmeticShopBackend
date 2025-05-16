@@ -1,6 +1,7 @@
 package com.phatbee.cosmeticshopbackend.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,6 +25,7 @@ public class Cart implements Serializable {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference(value = "cart-cartitem")
     @ToString.Exclude
+//    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<CartItem> cartItems;
 

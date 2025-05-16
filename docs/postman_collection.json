@@ -1,0 +1,433 @@
+{
+  "info": {
+    "name": "Cosmetic Shop Backend API",
+    "_postman_id": "b4f6c7d8-9e3f-4a2b-b1c5-7d9e8f0a1234",
+    "description": "Postman Collection for Cosmetic Shop Backend API, supporting the Cosmetic Shop Android app.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Xác Thực",
+      "item": [
+        {
+          "name": "Đăng ký người dùng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"fullname\": \"Nguyen Van A\",\n  \"phone\": \"0123456789\",\n  \"gender\": \"MALE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Đăng nhập",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Xác thực OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/verify-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "verify-otp"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quản Lý Người Dùng",
+      "item": [
+        {
+          "name": "Lấy thông tin người dùng",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/user/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "user", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cập nhật hồ sơ người dùng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullname\": \"Nguyen Van B\",\n  \"phone\": \"0987654321\",\n  \"gender\": \"MALE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/user/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "user", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quản Lý Sản Phẩm",
+      "item": [
+        {
+          "name": "Lấy danh sách sản phẩm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Tìm kiếm sản phẩm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/products/search?keyword=lipstick",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "products", "search"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "lipstick"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quản Lý Giỏ Hàng",
+      "item": [
+        {
+          "name": "Lấy giỏ hàng",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/cart/user/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "cart", "user", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Thêm sản phẩm vào giỏ",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"productId\": 1,\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/cart/add",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "cart", "add"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quản Lý Đơn Hàng",
+      "item": [
+        {
+          "name": "Tạo đơn hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"total\": 300000,\n  \"orderStatus\": \"PENDING\",\n  \"addressId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/orders/create",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "orders", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Tạo URL thanh toán VNPay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"300000\",\n  \"orderInfo\": \"Thanh toán đơn hàng #123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/orders/create-vnpay-url?userId=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "orders", "create-vnpay-url"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Thanh Toán",
+      "item": [
+        {
+          "name": "Tạo bản ghi thanh toán",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"total\": 300000,\n  \"paymentMethod\": \"VNPAY\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/payments/create",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "payments", "create"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quản Lý Địa Chỉ",
+      "item": [
+        {
+          "name": "Thêm địa chỉ mới",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"123 Đường Láng, Hà Nội\",\n  \"receiverName\": \"Nguyen Van A\",\n  \"receiverPhone\": \"0123456789\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/addresses/add?userId=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "addresses", "add"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Danh Sách Yêu Thích",
+      "item": [
+        {
+          "name": "Thêm sản phẩm vào wishlist",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/wishlist/add?userId=1&productId=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "wishlist", "add"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                },
+                {
+                  "key": "productId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Đánh Giá",
+      "item": [
+        {
+          "name": "Gửi đánh giá sản phẩm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 1,\n  \"rating\": 5,\n  \"comment\": \"Sản phẩm tuyệt vời!\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/feedback",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "feedback"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Danh Mục & Banner",
+      "item": [
+        {
+          "name": "Lấy danh sách danh mục",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/categories",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Lấy danh sách banner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/banners",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "banners"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
